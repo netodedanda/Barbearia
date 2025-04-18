@@ -397,6 +397,9 @@ body {
     -webkit-overflow-scrolling: touch; /* Para rolagem suave em iOS */
     padding: 10px 15px; /* Adiciona um pouco de padding para a rolagem */
   }
+  body{
+    max-height: '100%';
+  }
 
   .botao-opcao {
     flex-shrink: 0; /* Impede que os botões encolham */
