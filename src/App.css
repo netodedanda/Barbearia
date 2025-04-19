@@ -243,11 +243,30 @@ body {
 }
 
 @media (max-width: 480px) {
-  .botao-opcao {
-    width: 100%;
-    font-size: 14px;
-    padding: 8px 12px;
+  .opcoes {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 15px;
   }
+
+  .botao-opcao {
+    flex-shrink: 0;
+    margin-right: 8px;
+    min-width: 120px;
+  }
+
+  /* Adicione este padding-bottom ao chat-container ou ao body */
+  .chat-container {
+    padding-bottom: 60px; /* Ajuste este valor conforme necessário */
+  }
+
+  /* Ou, se preferir adicionar ao body */
+  /* body {
+  padding-bottom: 60px; /* Ajuste este valor conforme necessário */
+  /* } */
+
 
   .barbeiro-card {
     width: 100%;
