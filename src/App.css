@@ -230,34 +230,29 @@ body {
 /* Estilos específicos para as opções de serviço em mobile */
 @media (max-width: 768px) {
   .opcoes {
-    /* Força o layout horizontal */
     flex-direction: row;
-    flex-wrap: nowrap; /* Impede que os botões quebrem para a próxima linha */
-    overflow-x: auto; /* Adiciona a barra de rolagem horizontal */
-    -webkit-overflow-scrolling: touch; /* Para rolagem suave em iOS */
-    padding: 10px 15px; /* Adiciona um pouco de padding para a rolagem */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 10px 15px;
   }
 
   .botao-opcao {
-    flex-shrink: 0; /* Impede que os botões encolham */
-    margin-right: 8px; /* Adiciona espaço entre os botões na horizontal */
-    min-width: 120px; /* Garante uma largura mínima para cada botão */
+    flex-shrink: 0;
+    margin-right: 8px;
+    min-width: 120px;
   }
 
-  /* Ajuste para evitar que o teclado cubra muito a tela */
   .chat-container {
-    height: 100vh; /* Garante que o container ocupe a altura total da viewport */
-    max-height: 100vh; /* Garante que não cresça além da altura da viewport */
+    height: 100vh;
+    max-height: 100vh;
   }
-}
 
-/* Responsividade geral (ajustes conforme necessário) */
-@media (max-width: 768px) {
-  /* Outros ajustes para telas menores, se necessário */
   .barbeiro-card {
     width: calc(50% - 5px);
   }
 }
+
 
 @media (max-width: 480px) {
   /* Outros ajustes para telas muito pequenas, se necessário */
