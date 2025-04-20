@@ -166,7 +166,7 @@ body {
   flex-grow: 1;
   padding: 8px;
   border: none;
-  border-radius: 4px;
+  border-radius: 15px; /* Arredondamento do input */
   background-color: #333;
   color: #fff;
   font-size: 14px;
@@ -205,185 +205,7 @@ body {
   cursor: pointer;
   width: calc(33.33% - 7px);
   max-width: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.barbeiro-card:hover {
-  background-color: #333;
-  transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.barbeiro-img {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  margin-bottom: 5px;
-  object-fit: cover;
-}
-
-.barbeiro-card span {
-  display: block;
-  font-size: 14px;
-}
-
-/* Responsividade (ajustes conforme necessário) */
-@media (max-width: 768px) {
-  .botao-opcao {
-    min-width: auto;
-    width: calc(50% - 4px);
-    font-size: 13px;
-    padding: 6px 10px;
-  }
-
-  .barbeiro-card {
-    width: calc(50% - 5px);
-  }
-}
-
-@media (max-width: 480px) {
-  .opcoes {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 10px 15px;
-  }
-
-  .botao-opcao {
-    flex-shrink: 0;
-    margin-right: 8px;
-    min-width: 120px;
-  }
-
-  /* Adicione este padding-bottom ao chat-container ou ao body */
-  .chat-container {
-    padding-bottom: 60px; /* Ajuste este valor conforme necessário */
-  }
-
-  /* Ou, se preferir adicionar ao body */
-  /* body {
-  padding-bottom: 60px; /* Ajuste este valor conforme necessário */
-  /* } */
-
-
-  .barbeiro-card {
-    width: 100%;
-  }
-}
-
-/* ... (seu CSS existente) ... */
-
-/* Estilos para o container de opções */
-.opcoes-container {
-  padding: 10px 20px;
-  background-color: #111;
-  border-top: 1px solid #222;
-}
-
-.opcoes {
-  display: flex;
-  flex-wrap: wrap; /* Mantemos o wrap para telas maiores */
-  gap: 8px;
-  margin-top: 5px;
-}
-
-/* Estilos para os botões de opção */
-.botao-opcao {
-  background-color: #2c2c2c;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 6px;
-  padding: 8px 12px;
-  text-align: center;
-  cursor: pointer;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
-  flex-grow: 0;
-  width: auto;
-  min-width: 80px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-}
-
-.botao-opcao:hover {
-  background-color: #3a3a3a;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.botao-opcao strong {
-  font-size: 16px;
-  display: block;
-  margin-bottom: 3px;
-}
-
-.botao-opcao span {
-  font-size: 12px;
-  color: #ccc;
-}
-
-/* Estilos específicos para botões de data */
-.botao-opcao.data {
-  min-width: 60px;
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-/* Estilos para o container de horários */
-.horarios-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0 20px;
-}
-
-.grid-horarios {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 8px;
-}
-
-.botao-opcao.horario {
-  padding: 6px;
-  font-size: 13px;
-}
-
-.botao-voltar {
-  background-color: #444;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 13px;
-  align-self: flex-start;
-}
-
-.botao-voltar:hover {
-  background-color: #555;
-}
-
-/* Estilos para os cards de barbeiro */
-.barbeiros {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: flex-start;
-  padding: 10px 20px;
-  margin-top: 5px;
-}
-
-.barbeiro-card {
-  background-color: #222;
-  padding: 10px;
-  border-radius: 8px;
-  text-align: center;
-  cursor: pointer;
-  width: calc(33.33% - 7px);
-  max-width: none;
-  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.1s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -416,14 +238,17 @@ body {
     -webkit-overflow-scrolling: touch; /* Para rolagem suave em iOS */
     padding: 10px 15px; /* Adiciona um pouco de padding para a rolagem */
   }
-  body{
-    max-height: '80%';
-  }
 
   .botao-opcao {
     flex-shrink: 0; /* Impede que os botões encolham */
     margin-right: 8px; /* Adiciona espaço entre os botões na horizontal */
     min-width: 120px; /* Garante uma largura mínima para cada botão */
+  }
+
+  /* Ajuste para evitar que o teclado cubra muito a tela */
+  .chat-container {
+    height: 100vh; /* Garante que o container ocupe a altura total da viewport */
+    max-height: 100vh; /* Garante que não cresça além da altura da viewport */
   }
 }
 
