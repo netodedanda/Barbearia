@@ -39,6 +39,7 @@ const Chatbot = () => {
   const [barbeiro, setBarbeiro] = useState('');
   const [data, setData] = useState('');
   const chatBoxRef = useRef(null);
+  const chatbotContainerRef = useRef(null); // Referência para o container principal
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -98,7 +99,7 @@ const Chatbot = () => {
 
   const handleOpcaoClick = (opcao) => {
     let mensagensAtualizadas = messages.filter(
-      (msg) => msg.tipo !== 'opcoes' && msg.tipo !== 'barbeiros' && msg.tipo !== 'datas'
+      (msg) => msg.tipo !== 'opcoes' && msg.tipo !== 'barbeiros' && msg.tipo !== 'datas' && msg.tipo !== 'horarios'
     );
     setMessages([...mensagensAtualizadas, { text: opcao?.nome || opcao?.label || opcao, sender: 'user' }]);
 
@@ -183,8 +184,10 @@ const Chatbot = () => {
       return (
         <div className="opcoes">
           {mensagem.opcoes.map((opcao, idx) => (
-            <button key={idx} onClick={() => handleOpcaoClick(opcao)}>
-              {opcao.nome} - {opcao.preco}
+            <button key={idx} onClick={() => handleOpcaoClick(opcao)} className="botao-opcao servico">
+              <strong>{opcao.nome}</strong>
+              <br />
+              <span>{opcao.preco} • {opcao.duracao}</span>
             </button>
           ))}
         </div>
@@ -193,7 +196,7 @@ const Chatbot = () => {
       return (
         <div className="opcoes">
           {mensagem.opcoes.map((opcao, idx) => (
-            <button key={idx} onClick={() => handleOpcaoClick(opcao.valor)}>
+            <button key={idx} onClick={() => handleOpcaoClick(opcao.valor)} className="botao-opcao data">
               {opcao.label}
             </button>
           ))}
@@ -201,22 +204,34 @@ const Chatbot = () => {
       );
     } else if (mensagem.tipo === 'horarios') {
       return (
-        <div className="opcoes">
-          {mensagem.opcoes.map((opcao, idx) => (
-            <button key={idx} onClick={() => handleOpcaoClick(opcao)}>
-              {opcao}
-            </button>
-          ))}
+        <div className="horarios-container">
+          <div className="grid-horarios">
+            {mensagem.opcoes.map((opcao, idx) => (
+              <button key={idx} onClick={() => handleOpcaoClick(opcao)} className="botao-opcao horario">
+                {opcao}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={() => {
+              const mensagensFiltradas = messages.filter((msg) => msg.tipo !== 'horarios');
+              setMessages([...mensagensFiltradas, { text: 'Vamos tentar outra data. Quando você prefere?', sender: 'bot' }, { tipo: 'datas', opcoes: gerarProximos7Dias(), sender: 'bot' }]);
+              setStep(3);
+            }}
+            className="botao-voltar"
+          >
+            ↻ Ver outras datas
+          </button>
         </div>
       );
     } else if (mensagem.tipo === 'barbeiros') {
       return (
-        <div className="opcoes">
+        <div className="barbeiros">
           {mensagem.opcoes.map((opcao, idx) => (
-            <div key={idx} onClick={() => handleOpcaoClick(opcao)} className="barbeiro-opcao">
-              <img src={opcao.imagem} alt={opcao.nome} />
+            <button key={idx} onClick={() => handleOpcaoClick(opcao)} className="botao-opcao barbeiros barbeiro-card">
+              <img src={opcao.imagem} alt={opcao.nome} className="barbeiro-img" />
               <span>{opcao.nome}</span>
-            </div>
+            </button>
           ))}
         </div>
       );
@@ -224,8 +239,36 @@ const Chatbot = () => {
     return null;
   };
 
+  useEffect(() => {
+    const inputElement = document.querySelector('.input-area input');
+
+    const handleFocus = () => {
+      if (chatbotContainerRef.current) {
+        chatbotContainerRef.current.style.maxHeight = '60vh'; // Ajuste conforme necessário
+      }
+    };
+
+    const handleBlur = () => {
+      if (chatbotContainerRef.current) {
+        chatbotContainerRef.current.style.maxHeight = '100vh';
+      }
+    };
+
+    if (inputElement) {
+      inputElement.addEventListener('focus', handleFocus);
+      inputElement.addEventListener('blur', handleBlur);
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener('focus', handleFocus);
+        inputElement.removeEventListener('blur', handleBlur);
+      }
+    };
+  }, []);
+
   return (
-    <div className="chatbot-container">
+    <div className="chatbot-container" ref={chatbotContainerRef}>
       <div className="chatbox" ref={chatBoxRef}>
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.sender}`}>
@@ -234,17 +277,15 @@ const Chatbot = () => {
           </div>
         ))}
       </div>
-      {step < 2 && (
-        <form onSubmit={handleSend} className="input-area">
-          <input
-            type="text"
-            placeholder="Digite aqui..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-          />
-          <button type="submit">Enviar</button>
-        </form>
-      )}
+      <form onSubmit={handleSend} className="input-area">
+        <input
+          type="text"
+          placeholder="Digite aqui..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+        />
+        <button type="submit">Enviar</button>
+      </form>
     </div>
   );
 };
