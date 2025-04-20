@@ -35,7 +35,6 @@ body {
   max-width: 600px; /* Limita a largura máxima para melhor leitura em telas grandes */
 }
 
-/* Área de exibição das mensagens (ocupa o espaço restante com rolagem) */
 .chat-box {
   flex-grow: 1; /* Ocupa o máximo de espaço vertical disponível */
   overflow-y: auto; /* Permite rolagem vertical */

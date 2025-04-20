@@ -3,7 +3,26 @@ import './App.css';
 import b1 from './assets/barbeiro/eu.jpg';
 import axios from 'axios';
 
-// ... (restante das funções gerarProximos7Dias e obterHorariosDisponiveis)
+// Função para gerar os próximos 7 dias
+const gerarProximos7Dias = () => {
+  const proximos7Dias = [];
+  for (let i = 0; i < 7; i++) {
+    const data = new Date();
+    data.setDate(data.getDate() + i);
+    const diaSemana = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' }).format(data);
+    const diaMes = data.getDate();
+    proximos7Dias.push({
+      valor: data.toISOString().split('T')[0],
+      label: `${diaSemana}, ${diaMes}`,
+    });
+  }
+  return proximos7Dias;
+};
+
+// Função para obter horários disponíveis (simulado)
+const obterHorariosDisponiveis = () => {
+  return ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+};
 
 const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -20,6 +39,7 @@ const Chatbot = () => {
   const [barbeiro, setBarbeiro] = useState('');
   const [data, setData] = useState('');
   const chatBoxRef = useRef(null);
+  const chatContainerRef = useRef(null); // Referência para o container principal
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -143,6 +163,85 @@ const Chatbot = () => {
     }
   };
 
+  const handleOpcaoClickServico = (opcao) => {
+    let mensagensAtualizadas = messages.filter(
+      (msg) => msg.tipo !== 'opcoes' && msg.tipo !== 'barbeiros' && msg.tipo !== 'datas'
+    );
+    setMessages([...mensagensAtualizadas, { text: opcao.nome, sender: 'user' }]);
+    setServico(opcao.nome);
+    setMessages((prev) => [
+      ...prev,
+      { text: 'Ótimo! Agora selecione a data:', sender: 'bot' },
+      { tipo: 'datas', opcoes: gerarProximos7Dias(), sender: 'bot' },
+    ]);
+    setStep(3);
+  };
+
+  const handleOpcaoClickData = (opcao) => {
+    setData(opcao);
+    const dataSelecionada = new Date(opcao).toLocaleDateString('pt-BR');
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.tipo !== 'datas'),
+      { text: dataSelecionada, sender: 'user' },
+      { text: 'Horários disponíveis para esta data:', sender: 'bot' },
+      { tipo: 'horarios', opcoes: obterHorariosDisponiveis(), sender: 'bot' },
+    ]);
+    setStep(4);
+  };
+
+  const handleOpcaoClickHorario = (opcao) => {
+    setHorario(opcao);
+    setMessages((prev) => [
+      ...prev.filter((msg) => msg.tipo !== 'horarios'),
+      { text: opcao, sender: 'user' },
+      {
+        tipo: 'barbeiros',
+        opcoes: [
+          { nome: 'Lucas', imagem: b1 },
+          { nome: 'João', imagem: b1 },
+          { nome: 'Carlos', imagem: b1 },
+        ],
+        sender: 'bot',
+      },
+    ]);
+    setStep(5);
+  };
+
+  const handleOpcaoClickBarbeiro = (opcao) => {
+    setBarbeiro(opcao?.nome || '');
+    const dataFormatada = new Date(data).toLocaleDateString('pt-BR');
+    const mensagemConfirmacao = `🎉 Agendamento confirmado!\n\n👤 Cliente: ${nome}\n💈 Serviço: ${servico}\n📅 Data: ${dataFormatada}\n⏰ Horário: ${horario}\n✂️ Barbeiro: ${opcao?.nome || 'Não informado'}\n\nAguarde enquanto salvamos seus dados...`;
+
+    setMessages((prev) => [
+      ...prev,
+      { text: mensagemConfirmacao, sender: 'bot' },
+    ]);
+    setStep(6);
+
+    const agendamento = {
+      nome: nome,
+      barbeiro: opcao?.nome || '',
+      servico: servico,
+      data_hora: `${data} ${horario}:00`,
+    };
+
+    axios
+      .post('http://localhost:3001/agendar', agendamento)
+      .then((response) => {
+        setMessages((prev) => [
+          ...prev,
+          { text: '✅ Dados salvos com sucesso no servidor! Até logo! 👋', sender: 'bot' },
+        ]);
+      })
+      .catch((error) => {
+        console.error('Erro ao enviar agendamento:', error);
+        setMessages((prev) => [
+          ...prev,
+          { text: '❌ Ocorreu um erro ao salvar os dados. Tente novamente mais tarde.', sender: 'bot' },
+        ]);
+      });
+  };
+
   const renderOpcoes = () => {
     const msgOpcoes = messages.find((msg) => msg.tipo);
     if (!msgOpcoes) return null;
@@ -154,7 +253,7 @@ const Chatbot = () => {
             {msgOpcoes.opcoes.map((op, index) => (
               <button
                 key={index}
-                onClick={() => handleOpcaoClick(op)}
+                onClick={() => handleOpcaoClickServico(op)}
                 className="botao-opcao servico"
               >
                 <strong>{op.nome}</strong>
@@ -170,7 +269,7 @@ const Chatbot = () => {
             {msgOpcoes.opcoes.map((dia, index) => (
               <button
                 key={index}
-                onClick={() => handleOpcaoClick(dia.valor)}
+                onClick={() => handleOpcaoClickData(dia.valor)}
                 className="botao-opcao data"
               >
                 {dia.label}
@@ -185,23 +284,7 @@ const Chatbot = () => {
               {msgOpcoes.opcoes.map((horario, index) => (
                 <button
                   key={index}
-                  onClick={() => {
-                    setHorario(horario);
-                    setMessages((prev) => [
-                      ...prev.filter((msg) => msg.tipo !== 'horarios'),
-                      { text: horario, sender: 'user' },
-                      {
-                        tipo: 'barbeiros',
-                        opcoes: [
-                          { nome: 'Lucas', imagem: b1 },
-                          { nome: 'João', imagem: b1 },
-                          { nome: 'Carlos', imagem: b1 },
-                        ],
-                        sender: 'bot',
-                      },
-                    ]);
-                    setStep(5);
-                  }}
+                  onClick={() => handleOpcaoClickHorario(horario)}
                   className="botao-opcao horario"
                 >
                   {horario}
@@ -229,7 +312,7 @@ const Chatbot = () => {
             {msgOpcoes.opcoes.map((barbeiro, index) => (
               <button
                 key={index}
-                onClick={() => handleOpcaoClick(barbeiro)}
+                onClick={() => handleOpcaoClickBarbeiro(barbeiro)}
                 className="botao-opcao barbeiros barbeiro-card"
               >
                 <img src={barbeiro.imagem} alt={barbeiro.nome} className="barbeiro-img" />
@@ -243,8 +326,39 @@ const Chatbot = () => {
     }
   };
 
+
+  useEffect(() => {
+    const inputElement = document.querySelector('.chat-input input');
+
+    const handleFocus = () => {
+      if (chatContainerRef.current) {
+        // Ajuste a altura do container para deixar espaço para o teclado
+        chatContainerRef.current.style.maxHeight = '60vh'; // Experimente diferentes valores
+      }
+    };
+
+    const handleBlur = () => {
+      if (chatContainerRef.current) {
+        // Restaura a altura original
+        chatContainerRef.current.style.maxHeight = '100vh';
+      }
+    };
+
+    if (inputElement) {
+      inputElement.addEventListener('focus', handleFocus);
+      inputElement.addEventListener('blur', handleBlur);
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener('focus', handleFocus);
+        inputElement.removeEventListener('blur', handleBlur);
+      }
+    };
+  }, []);
+
   return (
-    <div className="chat-container">
+    <div className="chat-container" ref={chatContainerRef}>
       <div className="chat-box" ref={chatBoxRef}>
         {messages.map((msg, i) =>
           msg.text ? (
@@ -257,7 +371,7 @@ const Chatbot = () => {
         )}
       </div>
 
-      <div className="opcoes-container">{renderOpcoes()}</div> {/* Movi para cá */}
+      <div className="opcoes-container">{renderOpcoes()}</div>
 
       <form onSubmit={handleSend} className="chat-input">
         <input
